@@ -1,0 +1,25 @@
+.form-wrap {
+  padding: 20px;
+  background-color: rgb(17, 30, 209);
+  display: flex;
+  justify-content: center;
+}
+.search-form {
+  font-size: 0;
+}
+
+input {
+  font-size: 20px;
+  border: 0;
+  outline: none;
+}
+
+button {
+  font-size: 20px;
+  border: 0;
+  cursor: pointer;
+}
+
+.is-hidden {
+  display: none;
+}
