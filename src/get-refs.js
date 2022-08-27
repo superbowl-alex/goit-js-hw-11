@@ -4,5 +4,6 @@ export default function getRefs() {
     form: document.querySelector('.search-form'),
     input: document.querySelector('.search-form__input'),
     gallery: document.querySelector('.gallery'),
+    card: document.querySelector('.gallery__card'),
   };
 }

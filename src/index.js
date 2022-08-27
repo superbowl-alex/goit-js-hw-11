@@ -16,9 +16,8 @@ let overflow = false;
 // Creating an instance of a class ImagesApiService
 const imagesApiService = new ImagesApiService();
 
-// Add eventListeners
+// Add eventListener to the form
 refs.form.addEventListener('submit', onSearch);
-window.addEventListener('scroll', handleWindowScroll);
 
 // Creating an instance of a class SimpleLightbox
 const lightbox = new SimpleLightbox('.gallery a', {
@@ -51,17 +50,15 @@ function onSearch(e) {
   }
 }
 
-// Function that run an infinite scroll
-function handleWindowScroll({ target }) {
-  if (
-    window.scrollY + window.innerHeight + 10 >=
-      document.documentElement.scrollHeight &&
-    !imagesApiService.isLoading &&
-    !overflow
-  ) {
-    onLoadMore();
+// Creating an object of the IntersectionObserver class that monitors the need to access the backend for a new piece of data
+let observer = new IntersectionObserver(([entry], observer) => {
+  if (entry.isIntersecting) {
+    observer.unobserve(entry.target);
+    if (!imagesApiService.isLoading && !overflow) {
+      onLoadMore();
+    }
   }
-}
+}, {});
 
 // A function that calls the server when more images need to be loaded
 function onLoadMore() {
@@ -90,6 +87,12 @@ function render(data) {
     'beforeend',
     data.hits.map(hit => markup(hit)).join('')
   );
+
+  const lastCard = refs.gallery.lastElementChild;
+  if (lastCard) {
+    observer.observe(lastCard);
+  }
+
   lightbox.refresh();
 }
 
