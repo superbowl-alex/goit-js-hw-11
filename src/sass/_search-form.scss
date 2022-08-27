@@ -8,18 +8,28 @@
   font-size: 0;
 }
 
-input {
-  font-size: 20px;
+.search-form__input {
+  font-size: 24px;
   border: 0;
   outline: none;
+  padding-left: 5px;
+  &:hover,
+  &:focus {
+    outline: teal auto 1px;
+  }
 }
 
-button {
-  font-size: 20px;
+.search-form__btn {
+  font-size: 24px;
   border: 0;
   cursor: pointer;
+  &:hover,
+  &:focus {
+    color: blue;
+    outline: teal auto 1px;
+  }
 }
 
-.is-hidden {
-  display: none;
+.search-form__svg {
+  fill: currentColor;
 }

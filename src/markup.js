@@ -1,3 +1,4 @@
+// function creating markup for one images card
 export default function markup({
   largeImageURL,
   webformatURL,

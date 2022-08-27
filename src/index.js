@@ -1,101 +1,108 @@
-// import required packages and entities
-// import getRefs from './get-refs';
+// Import required packages, entities and modules
 import Notiflix from 'notiflix';
 import markup from './markup';
+import getRefs from './get-refs';
 import ImagesApiService from './images-service';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-const axios = require('axios');
 
-//
-const refs = {
-  form: document.querySelector('.search-form'),
-  input: document.querySelector('.search-form__input'),
-  gallery: document.querySelector('.gallery'),
-  buttonLoadMore: document.querySelector('[data-action="load-more"]'),
-};
-
-const imagesApiService = new ImagesApiService();
+// Initializing references to DOM elements
+const refs = getRefs();
+// Total number of pages in backend response
 let totalPages = 0;
+// Boolean variable that signals that we have reached the end of the collection
+let overflow = false;
 
-// add an eventListener to the form
+// Creating an instance of a class ImagesApiService
+const imagesApiService = new ImagesApiService();
+
+// Add eventListeners
 refs.form.addEventListener('submit', onSearch);
-refs.buttonLoadMore.addEventListener('click', onLoadMore);
+window.addEventListener('scroll', handleWindowScroll);
 
+// Creating an instance of a class SimpleLightbox
 const lightbox = new SimpleLightbox('.gallery a', {
   captionDelay: 250,
   captionsData: 'alt',
 });
 lightbox.on('show.lightbox');
 
-// function that run on the form submit
+// Function that run on the form submit
 function onSearch(e) {
   e.preventDefault();
+  let currentQuery = e.target.elements.searchQuery.value.trim();
+  if (imagesApiService.query === currentQuery) {
+    return;
+  }
   clearOutput();
-  imagesApiService.query = e.currentTarget.elements.searchQuery.value.trim();
+  imagesApiService.query = currentQuery;
   imagesApiService.resetPage();
-  if (imagesApiService.query) {
+  if (!imagesApiService.query) {
+    return;
+  } else {
     imagesApiService
       .fetchImages()
       .then(({ data }) => {
-        console.log(data);
         totalPages = Math.ceil(data.totalHits / imagesApiService.HITS_PER_PAGE);
-        if (data.hits.length !== 0) {
-          Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
-        }
+        validationData(data);
         render(data);
       })
       .catch(error => console.log(error));
   }
 }
 
+// Function that run an infinite scroll
+function handleWindowScroll({ target }) {
+  if (
+    window.scrollY + window.innerHeight + 10 >=
+      document.documentElement.scrollHeight &&
+    !imagesApiService.isLoading &&
+    !overflow
+  ) {
+    onLoadMore();
+  }
+}
+
+// A function that calls the server when more images need to be loaded
 function onLoadMore() {
   imagesApiService
     .fetchImages()
     .then(({ data }) => {
-      console.log(data);
       render(data);
-      smoothScroll();
       if (imagesApiService.page > totalPages) {
-        refs.buttonLoadMore.classList.add('is-hidden');
         Notiflix.Notify.warning(
           "We're sorry, but you've reached the end of search results."
         );
+        overflow = true;
       }
     })
     .catch(error => console.log(error));
 }
 
-// output cleaning function
+// Output cleaning function
 function clearOutput() {
   refs.gallery.innerHTML = '';
-  refs.buttonLoadMore.classList.add('is-hidden');
 }
 
-// markup render function
+// Markup render function
 function render(data) {
-  // if the backend returned more than 10 countries
+  refs.gallery.insertAdjacentHTML(
+    'beforeend',
+    data.hits.map(hit => markup(hit)).join('')
+  );
+  lightbox.refresh();
+}
+
+// Backend response validation
+function validationData(data) {
+  // If no images were found for your request
   if (data.hits.length === 0) {
     Notiflix.Notify.failure(
       'Sorry, there are no images matching your search query. Please try again.'
     );
-  } else {
-    refs.gallery.insertAdjacentHTML(
-      'beforeend',
-      data.hits.map(hit => markup(hit)).join('')
-    );
-    refs.buttonLoadMore.classList.remove('is-hidden');
-    lightbox.refresh();
   }
-}
-
-function smoothScroll() {
-  const { height: cardHeight } = document
-    .querySelector('.gallery')
-    .firstElementChild.getBoundingClientRect();
-
-  window.scrollBy({
-    top: cardHeight * 2,
-    behavior: 'smooth',
-  });
+  // If pictures were found according to your request
+  else {
+    Notiflix.Notify.success(`Hooray! We found ${data.totalHits} images.`);
+  }
 }
