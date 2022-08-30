@@ -10,18 +10,20 @@
 
 .search-form__input {
   font-size: 24px;
-  border: 0;
+  border: 2px solid teal;
+  border-radius: 5px;
   outline: none;
   padding-left: 5px;
   &:hover,
   &:focus {
-    outline: teal auto 1px;
+    outline: teal auto 2px;
   }
 }
 
 .search-form__btn {
   font-size: 24px;
-  border: 0;
+  border: 2px solid teal;
+  border-radius: 5px;
   cursor: pointer;
   &:hover,
   &:focus {

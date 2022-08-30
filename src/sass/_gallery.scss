@@ -31,6 +31,7 @@ p {
 }
 
 .gallery__card {
+  border-radius: 4px;
   box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.2),
     0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 2px 1px -1px rgba(0, 0, 0, 0.12);
 }
@@ -43,9 +44,12 @@ p {
 
 .gallery__image:hover {
   transform: scale(1.03);
+  border-radius: 4px;
 }
 
 .gallery__image {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
   display: block;
   height: 76%;
   width: 100%;
