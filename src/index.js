@@ -5,6 +5,7 @@ import getRefs from './get-refs';
 import ImagesApiService from './images-service';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
+import OnlyScroll from 'only-scrollbar';
 
 // Initializing references to DOM elements
 const refs = getRefs();
@@ -12,6 +13,11 @@ const refs = getRefs();
 let totalPages = 0;
 // Boolean variable that signals that we have reached the end of the collection
 let overflow = false;
+
+// Creating an instance of a class OnlyScroll (adds inertia for increased smoothness)
+const scroll = new OnlyScroll(document.scrollingElement, {
+  damping: 0.7,
+});
 
 // Creating an instance of a class ImagesApiService
 const imagesApiService = new ImagesApiService();
